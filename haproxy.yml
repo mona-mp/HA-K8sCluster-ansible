@@ -1,0 +1,4 @@
+- hosts: k8s-haproxy
+  become: yes
+  roles:
+    - role: haproxy
