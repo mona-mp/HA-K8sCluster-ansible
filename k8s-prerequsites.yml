@@ -1,0 +1,4 @@
+- hosts: [masters,workers]
+  become: yes
+  roles:
+    - role: k8s-prerequsites
