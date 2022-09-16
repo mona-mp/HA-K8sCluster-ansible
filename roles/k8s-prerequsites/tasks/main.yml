@@ -11,12 +11,83 @@
         sudo swapoff -a
         sudo sed -i '/ swap / s/^\(.*\)$/#\1/g' /etc/fstab
 
-# - name: Create containerd config file
-#   file:
-#     path: "/etc/modules-load.d/containerd.conf"
-#     state: "touch"
-
-- name: add config
+- name: add containerd config
   copy:
     src: containerd.conf
     dest: /etc/modules-load.d/containerd.conf
+
+- name: Add the overlay module
+  community.general.modprobe:
+    name: overlay
+    state: present
+
+- name: Add the br_netfilter module
+  community.general.modprobe:
+    name: br_netfilter
+    state: present
+
+- name: add containerd config
+  copy:
+    src: 99-kubernetes-cri.conf
+    dest: /etc/sysctl.d/99-kubernetes-cri.conf
+
+- name: Apply new settings
+  command: sudo sysctl --system
+
+- name: Update  apt packages
+  become: true
+  apt:
+    update_cache: yes
+    cache_valid_time: 86400 #One day
+
+- name: Download and install containerd
+  apt:
+    name=containerd
+    state=present
+
+- name: add containerd config.toml
+  copy:
+    src: config.toml
+    dest: /etc/containerd/config.toml
+
+- name: restart containerd
+  service:
+    name=containerd
+    state=restarted
+
+- name: Install packages needed to use the Kubernetes
+  apt:
+    pkg:
+      - apt-transport-https
+      - ca-certificates
+      - curl
+      - gnupg
+    state: present
+    update_cache: true
+
+- name: add Kubernetes apt-key
+  apt_key:
+    url: https://packages.cloud.google.com/apt/doc/apt-key.gpg
+    validate_certs: false
+    state: present
+
+- name: add Kubernetes' APT repository
+  apt_repository:
+   repo: deb http://apt.kubernetes.io/ kubernetes-xenial main
+   state: present
+   filename: 'kubernetes'
+
+- name: Update  apt packages
+  become: true
+  apt:
+    update_cache: yes
+    cache_valid_time: 86400 #One day
+
+- name: Install packages needed to use the Kubernetes
+  apt:
+    pkg:
+      - kubelet
+      - kubeadm
+      - kubectl
+    state: present
+    update_cache: true

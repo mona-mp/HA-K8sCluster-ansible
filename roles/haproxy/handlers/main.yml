@@ -1,5 +1,5 @@
 ---
-# handlers fo haproxy
+# handlers for haproxy
 
 - name: restart haproxy
   service:
