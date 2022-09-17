@@ -1,0 +1,17 @@
+---
+# join new worker node to cluster
+
+- name: get join command
+  shell: kubeadm token create --print-join-command
+  register: worker_join_command
+  delegate_to: "{{ groups['masters'][0] }}"
+
+- name: set join command
+  set_fact:
+    worker_join_command: "{{ worker_join_command.stdout_lines[0] }}"
+
+- name: join cluster
+  shell: "{{ worker_join_command }} >> node_joined.txt"
+  args:
+    chdir: $HOME
+    creates: node_joined.txt
