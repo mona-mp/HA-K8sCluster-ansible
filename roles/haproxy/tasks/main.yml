@@ -17,3 +17,4 @@
     name=haproxy
     state=started
     enabled=yes
+

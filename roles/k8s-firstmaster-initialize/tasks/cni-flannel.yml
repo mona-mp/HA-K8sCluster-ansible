@@ -1,0 +1,10 @@
+---
+# install flannel cni
+
+- name: install flannel
+  become: yes
+  become_user: debian
+  shell:  kubectl apply -f https://github.com/coreos/flannel/raw/master/Documentation/kube-flannel.yml >> flannel_setup.txt
+  args:
+    chdir: $HOME
+    creates: flannel_setup.txt

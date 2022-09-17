@@ -1,4 +1,4 @@
-- hosts: [masters,workers]
+- hosts: k8s-master2
   become: yes
   roles:
     - role: k8s-prerequsites

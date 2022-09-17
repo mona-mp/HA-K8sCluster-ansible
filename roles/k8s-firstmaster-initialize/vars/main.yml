@@ -1,0 +1,4 @@
+flannel_cidr: 10.244.0.0/16
+kubernetes_version: 1.24.0
+haproxy_url : haproxy.monamoghadampanah.ir
+apiserver_port: 6443

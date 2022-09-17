@@ -14,7 +14,7 @@ defaults
         timeout server 50000
 
 frontend kubernetes
-    bind 94.101.184.231:6443
+    bind {{ haproxy_ip }}:{{ haproxy_port }}
     option tcplog
     mode tcp
     default_backend kubernetes-master-nodes

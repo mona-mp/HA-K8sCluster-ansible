@@ -1,0 +1,30 @@
+---
+#initialize first master of k8s cluster
+
+- name: copy the kubeadm-config-file to the master
+  template:
+    src: templates/kubeadm-config.yml.j2
+    dest: /tmp/kubeadm-config.yml
+
+- name: initialize the cluster
+  shell: kubeadm init --upload-certs --config /tmp/kubeadm-config.yml >> cluster_initialized.txt
+  args:
+   chdir: $HOME
+   creates: cluster_initialized.txt
+
+- name: create .kube directory
+  become: no
+  file:
+   path: $HOME/.kube
+   state: directory
+   mode: 0755
+
+- name: copy admin.conf to user's kube config
+  copy:
+   src: /etc/kubernetes/admin.conf
+   dest: /home/debian/.kube/config
+   remote_src: yes
+   owner: debian
+
+- name: install flannel
+  ansible.builtin.include_tasks: cni-flannel.yml

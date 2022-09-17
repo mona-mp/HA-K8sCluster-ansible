@@ -86,8 +86,23 @@
 - name: Install packages needed to use the Kubernetes
   apt:
     pkg:
-      - kubelet
-      - kubeadm
-      - kubectl
+      - kubelet={{ kubeadm_version }}
+      - kubeadm={{ kubeadm_version }}
+      - kubectl={{ kubeadm_version }}
     state: present
     update_cache: true
+
+- name: Hold kubeadm
+  dpkg_selections:
+    name: kubeadm
+    selection: hold
+
+- name: Hold kubectl
+  dpkg_selections:
+    name: kubectl
+    selection: hold
+
+- name: Hold kubelet
+  dpkg_selections:
+    name: kubelet
+    selection: hold
