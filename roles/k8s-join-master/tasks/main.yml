@@ -26,7 +26,7 @@
     master_join_command: "{{ master_join_command.stdout_lines[0] }}"
 
 - name: join cluster
-  shell: "{{ master_join_command }} --certificate-key {{ master_cert_key }} >> master_joined.txt"
+  shell: "{{ master_join_command }} --control-plane  --certificate-key {{ master_cert_key }} >> master_joined.txt"
   args:
     chdir: $HOME
     creates: node_joined.txt
