@@ -23,4 +23,10 @@ backend kubernetes-master-nodes
     mode tcp
     balance roundrobin
     option tcp-check
-    server {{ host_name}} {{ host_ip }}:{{ host_port }} check fall 3 rise 2
+
+
+{% for master in groups['masters'] %}
+
+    server mona-master{{ loop.index0 +1 }} {{ hostvars[master]['ansible_eth0']['ipv4']['address'] }}:{{ kubernetes_api_port }}  check fall 3 rise 2
+
+{% endfor %}
