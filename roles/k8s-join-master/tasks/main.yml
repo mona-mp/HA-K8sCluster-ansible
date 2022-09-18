@@ -1,0 +1,32 @@
+---
+# join new master node to cluster
+
+- name: generate certificate key
+  become: yes
+  shell: kubeadm init phase upload-certs --upload-certs
+  register: master_cert_key
+  delegate_to: "{{ groups['masters'][0] }}"
+- debug:
+    msg: "{{ master_cert_key.stdout_lines[2] }}"
+
+- name: set cert key command
+  set_fact:
+    master_cert_key: "{{ master_cert_key.stdout_lines[2] }}"
+
+- name: get join command for master
+  become: yes
+  shell: kubeadm token create --print-join-command
+  register: master_join_command
+  delegate_to: "{{ groups['masters'][0] }}"
+- debug:
+    msg: "{{ master_join_command.stdout_lines[0] }}"
+
+- name: set master join command
+  set_fact:
+    master_join_command: "{{ master_join_command.stdout_lines[0] }}"
+
+- name: join cluster
+  shell: "{{ master_join_command }} --certificate-key {{ master_cert_key }} >> master_joined.txt"
+  args:
+    chdir: $HOME
+    creates: node_joined.txt
